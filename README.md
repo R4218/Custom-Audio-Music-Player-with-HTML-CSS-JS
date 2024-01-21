@@ -1,6 +1,6 @@
 # Audio Player
 
-![Audio Player](link-to-your-repository-image.png)
+![Audio Player](https://github.com/R4218/Custom-Audio-Music-Player-with-HTML-CSS-JS/blob/main/Screenshot.png)
 
 ## Overview
 
