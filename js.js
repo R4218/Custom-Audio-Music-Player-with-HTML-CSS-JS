@@ -52,9 +52,27 @@ const app = {
   isRepeat: false,
   config: {},
   songs: [
-    { name: "Click Pow Get Down", singer: "Raftaar x Fortnite", path: "../Custom-Audio-Music-Player-with-HTML-CSS-JS/mp3/song1.mp3" },
-    // Add more songs if needed
-  ],
+      {
+        name: "Click Pow Get Down",
+        singer: "Raftaar x Fortnite",
+        path: "https://mp3.filmisongs.com/go.php?id=Damn%20Song%20Raftaar%20Ft%20KrSNa.mp3",
+        image: "",
+      },
+      {
+        name: "Tu Phir Se Aana",
+        singer: "Raftaar x Salim Merchant x Karma",
+        path: "https://mp3.filmisongs.com/go.php?id=Damn%20Song%20Raftaar%20Ft%20KrSNa.mp3",
+        image:
+          "https://1.bp.blogspot.com/-kX21dGUuTdM/X85ij1SBeEI/AAAAAAAAKK4/feboCtDKkls19cZw3glZWRdJ6J8alCm-gCNcBGAsYHQ/s16000/Tu%2BAana%2BPhir%2BSe%2BRap%2BSong%2BLyrics%2BBy%2BRaftaar.jpg",
+      },
+      {
+        name: "Naachne Ka Shaunq",
+        singer: "Raftaar x Brobha V",
+        path: "https://mp3.filmisongs.com/go.php?id=Damn%20Song%20Raftaar%20Ft%20KrSNa.mp3",
+        image: "https://i.ytimg.com/vi/QvswgfLDuPg/maxresdefault.jpg",
+      },
+      // Add more songs if needed
+    ],
 
   setConfig: function (key, value) {
     this.config[key] = value;
