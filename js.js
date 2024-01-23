@@ -52,7 +52,7 @@ const app = {
   isRepeat: false,
   config: {},
   songs: [
-    { name: "Click Pow Get Down", singer: "Raftaar x Fortnite", path: "/mp3/song1.mp3" },
+    { name: "Click Pow Get Down", singer: "Raftaar x Fortnite", path: "Custom-Audio-Music-Player-with-HTML-CSS-JS/mp3/song1.mp3" },
     // Add more songs if needed
   ],
 
