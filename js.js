@@ -146,18 +146,6 @@ document.addEventListener("DOMContentLoaded", function () {
         _this.isPlaying ? audio.pause() : audio.play();
       };
 
-      audio.onplay = function () {
-        _this.isPlaying = true;
-        player.classList.add("playing");
-        cdThumbAnimate.play();
-      };
-
-      audio.onpause = function () {
-        _this.isPlaying = false;
-        player.classList.remove("playing");
-        cdThumbAnimate.pause();
-      };
-
       audio.ontimeupdate = function () {
         if (audio.duration) {
           const progressPercent = Math.floor(
