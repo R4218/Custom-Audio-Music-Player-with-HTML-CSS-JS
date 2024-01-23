@@ -20,31 +20,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const speakerIcon = $("#speakerIcon");
   const duration = $("#duration");
 
-  function formatTime(timeInSeconds) {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
-  }
-
-  function formatBytes(bytes, decimals = 2) {
-    if (bytes === 0) return "0 Bytes";
-
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-  }
-
-  function getFileSize(file) {
-    if ("size" in file) {
-      return formatBytes(file.size);
-    }
-    return "Unknown";
-  }
-
   const app = {
     currentIndex: 0,
     isPlaying: false,
@@ -62,8 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
         name: "Tu Phir Se Aana",
         singer: "Raftaar x Salim Merchant x Karma",
         path: "/mp3/song1.mp3",
-        image:
-          "https://1.bp.blogspot.com/-kX21dGUuTdM/X85ij1SBeEI/AAAAAAAAKK4/feboCtDKkls19cZw3glZWRdJ6J8alCm-gCNcBGAsYHQ/s16000/Tu%2BAana%2BPhir%2BSe%2BRap%2BSong%2BLyrics%2BBy%2BRaftaar.jpg",
+        image: "https://1.bp.blogspot.com/-kX21dGUuTdM/X85ij1SBeEI/AAAAAAAAKK4/feboCtDKkls19cZw3glZWRdJ6J8alCm-gCNcBGAsYHQ/s16000/Tu%2BAana%2BPhir%2BSe%2BRap%2BSong%2BLyrics%2BBy%2BRaftaar.jpg",
       },
       {
         name: "Naachne Ka Shaunq",
@@ -81,55 +55,54 @@ document.addEventListener("DOMContentLoaded", function () {
     },
 
     render: async function () {
-      const htmls = await Promise.all(
-        this.songs.map(async (song, index) => {
-          await this.loadCurrentSongForRendering(index);
-          const response = await fetch(song.path);
-          const blob = await response.blob();
-          const size = getFileSize(blob);
-          console.log("response", response);
-          return `
-          <div class="song ${
-            index === this.currentIndex ? "active" : ""
-          }" data-index="${index}">
-            <div class="thumb" style="background-image: url('${
-              song.image ||
-              "https://play-lh.googleusercontent.com/a5WMofNQIRJieJnhWoTYXYoh_UqwE0NpI42tRKezgwixc21R9J40D14jTNUHUaS10MN3"
-            }')"></div>
+      // Load duration data for all songs before rendering
+      await Promise.all(this.songs.map((song, index) => this.loadCurrentSongForRendering(index)));
+
+      const htmls = this.songs.map((song, index) => {
+        const size = getFileSize(song);
+        return `
+          <div class="song ${index === this.currentIndex ? "active" : ""}" data-index="${index}">
+            <div class="thumb" style="background-image: url('${song.image || getDefaultImage()}')"></div>
             <div class="body">
               <h3 class="title">${song.name}</h3>
               <div class="song-info">
-              <span class="duration">Duration: ${formatTime(
-                song.duration
-              )} | </span>
-              <span class="file-size">File size: ${size}</span>
+                <span class="duration">Duration: ${formatTime(song.duration)} | </span>
+                <span class="file-size">File size: ${size}</span>
               </div>
             </div>
-            <a href="${song.path}" download="${
-            song.name
-          }" class="download-link"><i class="fas fa-download"></i></a>
+            <a href="${song.path}" download="${song.name}" class="download-link"><i class="fas fa-download"></i></a>
           </div>
         `;
-        })
-      );
+      });
 
       playlist.innerHTML = htmls.join("");
     },
 
-
     loadCurrentSongForRendering: function (index) {
-      return new Promise((resolve) => {
+      return new Promise(async (resolve) => {
         const song = this.songs[index];
         const tempAudio = new Audio();
         tempAudio.src = song.path;
-
-        tempAudio.addEventListener("loadedmetadata", () => {
+    
+        tempAudio.addEventListener("loadedmetadata", async () => {
           song.duration = tempAudio.duration;
+    
+          // Fetch file size asynchronously
+          try {
+            const response = await fetch(song.path);
+            const blob = await response.blob();
+            song.size = blob.size;
+          } catch (error) {
+            console.error("Error fetching file size:", error);
+            song.size = "Unknown"; // Set size to "Unknown" in case of an error
+          }
+    
           tempAudio.remove();
           resolve();
         });
       });
     },
+    
 
     defineProperties: function () {
       Object.defineProperty(this, "currentSong", {
@@ -144,6 +117,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
       playBtn.onclick = function () {
         _this.isPlaying ? audio.pause() : audio.play();
+      };
+
+      audio.onplay = function () {
+        _this.isPlaying = true;
+        player.classList.add("playing");
+      };
+
+      audio.onpause = function () {
+        _this.isPlaying = false;
+        player.classList.remove("playing");
       };
 
       audio.ontimeupdate = function () {
@@ -236,12 +219,10 @@ document.addEventListener("DOMContentLoaded", function () {
     },
 
     loadCurrentSong: function () {
-      heading.textContent = this.currentSong.name;
-      cdThumb.style.backgroundImage = `url('${
-        this.currentSong.image ||
-        "https://play-lh.googleusercontent.com/a5WMofNQIRJieJnhWoTYXYoh_UqwE0NpI42tRKezgwixc21R9J40D14jTNUHUaS10MN3"
-      }')`;
-      audio.src = this.currentSong.path;
+      const currentSong = this.currentSong;
+      heading.textContent = currentSong.name;
+      cdThumb.style.backgroundImage = `url('${currentSong.image || getDefaultImage()}')`;
+      audio.src = currentSong.path;
 
       audio.addEventListener("loadedmetadata", () => {
         duration.textContent = formatTime(audio.duration);
@@ -287,19 +268,41 @@ document.addEventListener("DOMContentLoaded", function () {
     },
   };
 
+  function formatTime(timeInSeconds) {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = Math.floor(timeInSeconds % 60);
+    return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  }
+
+  function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return "0 Bytes";
+
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  }
+
+  function getFileSize(file) {
+    return "size" in file ? formatBytes(file.size) : "Unknown";
+  }
+
   function updateSpeakerIcon(volumeValue) {
-    if (volumeValue === 0) {
-      speakerIcon.classList.remove("fa-volume-up");
-      speakerIcon.classList.add("fa-volume-off");
-    } else {
-      speakerIcon.classList.remove("fa-volume-off");
-      speakerIcon.classList.add("fa-volume-up");
-    }
+    const speakerClassList = speakerIcon.classList;
+    speakerClassList.toggle("fa-volume-up", volumeValue !== 0);
+    speakerClassList.toggle("fa-volume-off", volumeValue === 0);
   }
 
   function toggleMute() {
     audio.volume = audio.volume === 0 ? volume.value / 100 : 0;
     updateSpeakerIcon(audio.volume);
+  }
+
+  function getDefaultImage() {
+    return "https://play-lh.googleusercontent.com/a5WMofNQIRJieJnhWoTYXYoh_UqwE0NpI42tRKezgwixc21R9J40D14jTNUHUaS10MN3";
   }
 
   //  Full playlist download
@@ -309,19 +312,14 @@ document.addEventListener("DOMContentLoaded", function () {
   downloadAllBtn.onclick = async function () {
     const zip = new JSZip();
 
-    // Define a function to add each song to the zip file
     async function addSongToZip(song, index) {
       const response = await fetch(song.path);
       const blob = await response.blob();
       zip.file(`song_${index + 1}.mp3`, blob);
     }
 
-    // Use Promise.all to wait for all songs to be added to the zip
-    await Promise.all(
-      app.songs.map((song, index) => addSongToZip(song, index))
-    );
+    await Promise.all(app.songs.map((song, index) => addSongToZip(song, index)));
 
-    // Generate and download the zip file with the album title
     zip.generateAsync({ type: "blob" }).then((blob) => {
       const zipFileName = `${albumTitle}_songs.zip`;
       saveAs(blob, zipFileName);
