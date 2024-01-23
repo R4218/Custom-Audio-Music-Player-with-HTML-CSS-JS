@@ -254,7 +254,7 @@ const app = {
     this.render();
     randomBtn.classList.toggle("active", this.isRandom);
     repeatBtn.classList.toggle("active", this.isRepeat);
-    audio.volume = volume.value = 80;
+    audio.volume = volume.value = 0.8;
     updateSpeakerIcon(audio.volume);
   },
 };
