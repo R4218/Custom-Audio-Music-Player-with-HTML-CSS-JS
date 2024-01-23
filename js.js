@@ -52,11 +52,7 @@ const app = {
   isRepeat: false,
   config: {},
   songs: [
-    { name: "Click Pow Get Down", singer: "Raftaar x Fortnite", path: "/mp3/song1.mp3", image: "" },
-    { name: "Tu Phir Se Aana", singer: "Raftaar x Salim Merchant x Karma", path: "/mp3/song2.mp3", image: "https://1.bp.blogspot.com/-kX21dGUuTdM/X85ij1SBeEI/AAAAAAAAKK4/feboCtDKkls19cZw3glZWRdJ6J8alCm-gCNcBGAsYHQ/s16000/Tu%2BAana%2BPhir%2BSe%2BRap%2BSong%2BLyrics%2BBy%2BRaftaar.jpg" },
-    { name: "Naachne Ka Shaunq", singer: "Raftaar x Brobha V", path: "/mp3/song3.mp3", image: "https://i.ytimg.com/vi/QvswgfLDuPg/maxresdefault.jpg" },
-    { name: "Naachne Ka Shaunq", singer: "Raftaar x Brobha V", path: "/mp3/song3.mp3", image: "https://i.ytimg.com/vi/QvswgfLDuPg/maxresdefault.jpg" },
-    { name: "Naachne Ka Shaunq", singer: "Raftaar x Brobha V", path: "/mp3/song3.mp3", image: "https://i.ytimg.com/vi/QvswgfLDuPg/maxresdefault.jpg" },
+    { name: "Click Pow Get Down", singer: "Raftaar x Fortnite", path: "/mp3/song1.mp3" },
     // Add more songs if needed
   ],
 
